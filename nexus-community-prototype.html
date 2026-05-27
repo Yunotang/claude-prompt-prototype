@@ -1253,6 +1253,12 @@
   if (params.has('direct')) setMode('direct', true);
   if (params.has('compare')) openCompare('EdgeMesh 漫遊在會議室之間頻繁斷線，怎麼辦？');
   if (params.has('copilot')) openCopilot();
+  if (params.has('scrollTo')) {
+    setTimeout(() => {
+      const el = document.getElementById(params.get('scrollTo'));
+      if (el) { const y = el.getBoundingClientRect().top + window.scrollY - 150; window.scrollTo({top:y, behavior:'instant'}); }
+    }, 250);
+  }
   // Demo helper: ?demo=high|mid|low fires sample Q&A
   if (params.has('demo')) {
     openCopilot();
