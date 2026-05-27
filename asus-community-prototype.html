@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ASUS Enterprise Networking · Community</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand-1: #0265b8;
+    --brand-2: #00a3e0;
+    --ai-1: #6d28d9;
+    --ai-2: #06b6d4;
+  }
+  html, body { font-family: 'Inter','Noto Sans TC',system-ui,sans-serif; -webkit-font-smoothing: antialiased; }
+  body { overflow-x: hidden; }
+  ::selection { background:#bae6fd; color:#0c4a6e; }
+  @media (max-width: 640px) { html { font-size: 15px; } }
+
+  .glass { background: rgba(255,255,255,0.82); backdrop-filter: saturate(150%) blur(14px);}
+  .brand-grad { background: linear-gradient(135deg, #061226 0%, #052a55 38%, #0265b8 78%, #0aa6e8 100%);}
+  .accent-grad { background: linear-gradient(135deg, #0265b8 0%, #00a3e0 100%);}
+  .ai-grad { background: linear-gradient(135deg, var(--ai-1) 0%, var(--ai-2) 100%);}
+
+  .chip { display:inline-flex; align-items:center; gap:.35rem; padding:.25rem .65rem; border-radius:9999px; font-size:.72rem; font-weight:600; line-height:1; }
+  .dot { width:.4rem; height:.4rem; border-radius:9999px; display:inline-block;}
+  .ring-soft { box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 6px 20px -8px rgba(15,23,42,.08);}
+  .ring-soft-lg { box-shadow: 0 4px 8px rgba(15,23,42,.05), 0 24px 56px -12px rgba(15,23,42,.18);}
+  .kbd { font-family: ui-monospace,monospace; background:#f1f5f9; border:1px solid #e2e8f0; border-bottom-width:2px; border-radius:.4rem; padding:.05rem .4rem; font-size:.7rem; color:#475569;}
+
+  .fade-in { animation: fadeIn .35s ease-out both;}
+  @keyframes fadeIn { from {opacity:0; transform: translateY(6px);} to {opacity:1; transform:none;}}
+  .slide-up { animation: slideUp .35s cubic-bezier(.22,.9,.34,1) both;}
+  @keyframes slideUp { from {opacity:0; transform: translateY(16px);} to {opacity:1; transform:none;}}
+
+  /* Hero subtle pattern */
+  .hero-net { position:absolute; inset:0; pointer-events:none; overflow:hidden;}
+  .hero-net::before { content:''; position:absolute; inset:0; background-image:
+    radial-gradient(circle at 18% 32%, rgba(125,211,252,.18) 0, transparent 32%),
+    radial-gradient(circle at 78% 68%, rgba(168,85,247,.14) 0, transparent 38%);}
+  .hero-net::after { content:''; position:absolute; inset:0; background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size: 48px 48px; mask-image: linear-gradient(180deg, black 0%, transparent 80%);}
+  .pulse-ring { position:absolute; border-radius:9999px; border:1px solid rgba(125,211,252,.35); animation: pr 4s ease-out infinite;}
+  @keyframes pr { 0% {transform:scale(.4); opacity:0;} 30% {opacity:1;} 100% {transform:scale(1.4); opacity:0;}}
+
+  /* Segmented mode control */
+  .seg-wrap { background: rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius: 14px; padding: 4px; display:grid; grid-template-columns: 1fr 1fr; position:relative;}
+  .seg-indicator { position:absolute; top:4px; bottom:4px; width: calc(50% - 4px); background:#fff; border-radius:10px; transition: transform .25s cubic-bezier(.22,.9,.34,1); box-shadow: 0 4px 18px rgba(0,0,0,.25);}
+  .seg-btn { position:relative; z-index:1; padding: 10px 14px; border-radius:10px; font-weight:700; font-size:.85rem; display:flex; align-items:center; justify-content:center; gap:.4rem; color: rgba(255,255,255,.75); transition: color .2s;}
+  .seg-btn.is-active { color:#0f172a;}
+  .seg-wrap.is-direct .seg-indicator { transform: translateX(100%);}
+
+  /* AI Coach chip selection */
+  .chip-btn { transition: all .18s;}
+  .chip-btn.is-selected { background: linear-gradient(135deg, var(--brand-1), var(--brand-2)); color:#fff; border-color:transparent; box-shadow: 0 6px 18px -6px rgba(2,101,184,.55);}
+  .chip-btn.is-dim { opacity:.4;}
+
+  /* Digest expand */
+  .expand-body { display:none;}
+  .expand-body.is-open { display:block; animation: fadeIn .3s ease-out both;}
+  details[open] summary svg.chev { transform: rotate(90deg);}
+
+  /* Like/bookmark */
+  .like-btn.is-on { color:#0265b8; background:#e0f2fe;}
+  .bookmark-btn.is-on { color:#b45309; background:#fef3c7;}
+
+  /* Filter chips */
+  .filter-chip { padding:.4rem .9rem; border-radius:9999px; font-size:.8rem; font-weight:600; border:1px solid #e2e8f0; background:#fff; color:#475569; transition: all .18s; white-space:nowrap;}
+  .filter-chip:hover { border-color:#7dd3fc; color:#0369a1;}
+  .filter-chip.is-active { background: linear-gradient(135deg, var(--brand-1), var(--brand-2)); color:#fff; border-color:transparent; box-shadow: 0 6px 18px -6px rgba(2,101,184,.45);}
+
+  /* Copilot */
+  .copilot-panel { transform: translateY(20px) scale(.96); opacity:0; pointer-events:none; transition: all .25s cubic-bezier(.22,.9,.34,1);}
+  .copilot-panel.is-open { transform: none; opacity:1; pointer-events:auto;}
+  .typing::after { content:'▍'; color:#06b6d4; animation: blink 1s steps(2) infinite;}
+  @keyframes blink { 50% {opacity:0;}}
+
+  /* Modal */
+  .modal-back { background: rgba(2,6,23,.6); backdrop-filter: blur(8px);}
+  .modal-card { animation: slideUp .35s cubic-bezier(.22,.9,.34,1) both;}
+
+  /* Tour */
+  .tour-back { position:fixed; inset:0; background: rgba(2,6,23,.55); z-index:60;}
+  .tour-pop { position:absolute; z-index:61; max-width:340px; visibility:hidden; opacity:0; transition: opacity .25s ease-out;}
+  .tour-pop.is-positioned { visibility:visible; opacity:1;}
+
+  /* Sticky filter bar shadow only when stuck */
+  .sticky-bar { transition: box-shadow .2s;}
+  .sticky-bar.is-stuck { box-shadow: 0 8px 24px -12px rgba(15,23,42,.18); border-radius: 0;}
+
+  /* Hide native scrollbar on chip rail */
+  .chip-rail { overflow-x:auto; scrollbar-width:none;}
+  .chip-rail::-webkit-scrollbar { display:none;}
+
+  /* Subtle hover lift */
+  .lift { transition: transform .18s, box-shadow .18s;}
+  .lift:hover { transform: translateY(-2px); box-shadow: 0 14px 32px -16px rgba(15,23,42,.22);}
+
+  /* Mode segmented (top sticky band) — enlarged for clarity */
+  .seg-wrap-mini { position:relative; background:#e2e8f0; border-radius:14px; padding:5px; display:inline-flex; box-shadow: inset 0 1px 3px rgba(15,23,42,.06);}
+  .seg-indicator-mini { position:absolute; top:5px; bottom:5px; width:calc(50% - 5px); background: linear-gradient(135deg,#ffffff 0%, #f0f9ff 100%); border-radius:10px; transition: transform .28s cubic-bezier(.22,.9,.34,1); box-shadow: 0 4px 14px rgba(2,101,184,.22), 0 0 0 1.5px rgba(2,101,184,.2);}
+  .seg-btn-mini { position:relative; z-index:1; padding:10px 22px; border-radius:10px; font-size:.95rem; font-weight:700; color:#94a3b8; transition: color .2s; display:inline-flex; align-items:center; gap:.5rem; white-space:nowrap; letter-spacing:.01em;}
+  .seg-btn-mini.is-active { color:#0265b8;}
+  .seg-btn-mini > span:first-child { font-size:1.15em; line-height:1;}
+  .seg-wrap-mini.is-direct .seg-indicator-mini { transform: translateX(100%);}
+  @media (max-width: 480px) {
+    .seg-btn-mini { padding: 8px 14px; font-size: .85rem;}
+  }
+
+  /* Direct-mode keyword chips */
+  .dm-kw-chip { display:inline-flex; align-items:center; padding:.32rem .7rem; border-radius:8px; font-size:.78rem; font-weight:700; font-family: ui-monospace,monospace; color:#cbd5e1; background:#1e293b; border:1px solid #334155; transition:all .15s; cursor:pointer;}
+  .dm-kw-chip:hover { color:#7dd3fc; border-color:#0ea5e9; background:#0c4a6e;}
+  .dm-kw-chip.is-hot { color:#fde68a; border-color:#b45309; background: linear-gradient(135deg,#451a03,#1e293b);}
+
+  /* Expert callout in Digest card */
+  .expert-callout { background: linear-gradient(135deg,#f0f9ff 0%, #ecfeff 100%); border-left: 3px solid #0ea5e9; border-radius:.75rem; padding: .85rem 1rem;}
+  .expert-callout .quote { font-style: italic; color:#0c4a6e; line-height:1.55;}
+
+  /* AI confidence display */
+  .ai-pill { display:inline-flex; align-items:center; gap:.3rem; padding:.18rem .5rem; border-radius:9999px; font-size:.62rem; font-weight:800; color:#fff; background: linear-gradient(135deg, var(--ai-1), var(--ai-2)); letter-spacing:.05em;}
+  .cf-pill { display:inline-flex; align-items:center; gap:.4rem; padding:.22rem .55rem; border-radius:9999px; font-size:.62rem; font-weight:700; border:1px solid; line-height:1; white-space:nowrap;}
+  .cf-pill-high { color:#047857; background:#ecfdf5; border-color:#a7f3d0;}
+  .cf-pill-mid { color:#b45309; background:#fffbeb; border-color:#fcd34d;}
+  .cf-pill-low { color:#be123c; background:#fff1f2; border-color:#fecaca;}
+  .cf-bar { width:42px; height:4px; background:rgba(15,23,42,.08); border-radius:9999px; overflow:hidden;}
+  .cf-bar > span { display:block; height:100%; border-radius:9999px; transition: width .9s cubic-bezier(.4,0,.2,1);}
+  .cf-fill-high { background: linear-gradient(90deg,#10b981,#34d399);}
+  .cf-fill-mid { background: linear-gradient(90deg,#f59e0b,#fbbf24);}
+  .cf-fill-low { background: linear-gradient(90deg,#f43f5e,#fb7185);}
+  .cf-meta { display:flex; align-items:center; justify-content:space-between; gap:.5rem; margin-top:.55rem; padding-top:.5rem; border-top: 1px dashed #cbd5e1; font-size:.7rem; color:#64748b;}
+  .cf-meta b { color:#0f172a; font-weight:600;}
+  .cf-escalate { margin:.65rem -.75rem -.75rem; padding:.7rem .8rem; background: linear-gradient(135deg,#fff1f2,#fef2f2); border-top:1px solid #fecaca; border-bottom-left-radius:1rem; border-bottom-right-radius:.4rem; display:flex; align-items:center; justify-content:space-between; gap:.5rem; flex-wrap:wrap;}
+  .cf-escalate-msg { font-size:.7rem; color:#9f1239; font-weight:600;}
+  .cf-escalate-btn { display:inline-flex; align-items:center; gap:.3rem; padding:.4rem .85rem; border-radius:9999px; font-size:.7rem; font-weight:700; color:#fff; background: linear-gradient(135deg, var(--ai-1), var(--ai-2)); transition: transform .15s; cursor:pointer;}
+  .cf-escalate-btn:hover { transform: scale(1.04);}
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+<!-- ============== HEADER ============== -->
+<header class="sticky top-0 z-40 border-b border-slate-200/70 glass">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-3 sm:gap-6">
+    <a class="flex items-center gap-2.5 shrink-0">
+      <div class="w-9 h-9 rounded-lg brand-grad text-white grid place-items-center font-extrabold">A</div>
+      <div class="leading-tight hidden sm:block">
+        <div class="text-[15px] font-bold text-slate-900">ASUS <span class="text-sky-600">Networking</span></div>
+        <div class="text-[10px] text-slate-500 -mt-0.5 tracking-wider uppercase">Community</div>
+      </div>
+    </a>
+    <nav class="hidden lg:flex items-center gap-1 text-sm text-slate-600 ml-2">
+      <a class="px-3 py-1.5 rounded-md hover:bg-slate-100 font-semibold text-slate-900">首頁</a>
+      <a class="px-3 py-1.5 rounded-md hover:bg-slate-100">解題庫</a>
+      <a class="px-3 py-1.5 rounded-md hover:bg-slate-100">專家</a>
+      <a class="px-3 py-1.5 rounded-md hover:bg-slate-100">文件</a>
+    </nav>
+    <div class="flex-1"></div>
+    <div class="hidden md:flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-1.5 w-72 focus-within:ring-2 focus-within:ring-sky-300 transition">
+      <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.3-4.3M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z"/></svg>
+      <input id="topSearch" class="bg-transparent outline-none text-sm flex-1" placeholder="搜尋問題、設備、錯誤碼…" />
+      <span class="kbd">⌘K</span>
+    </div>
+    <div class="relative">
+      <button id="notifBtn" class="relative w-9 h-9 rounded-lg hover:bg-slate-100 grid place-items-center">
+        <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 0 0-4-5.7V5a2 2 0 1 0-4 0v.3A6 6 0 0 0 6 11v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0a3 3 0 1 1-6 0"/></svg>
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full"></span>
+      </button>
+      <div id="notifDropdown" class="hidden absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-white rounded-2xl ring-soft-lg border border-slate-100 overflow-hidden">
+        <div class="p-3 border-b border-slate-100 flex items-center justify-between">
+          <div class="font-bold text-sm">通知</div>
+          <button class="text-[11px] text-sky-600 font-semibold">全部已讀</button>
+        </div>
+        <div class="max-h-80 overflow-y-auto divide-y divide-slate-100">
+          <a class="flex items-start gap-3 p-3 hover:bg-slate-50">
+            <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 grid place-items-center text-sm font-bold">✓</div>
+            <div class="flex-1"><div class="text-sm"><b>Eric Wu</b> 驗證了你的解答</div><div class="text-[11px] text-slate-500 mt-0.5">3 分鐘前 · +15 聲望</div></div>
+          </a>
+          <a class="flex items-start gap-3 p-3 hover:bg-slate-50">
+            <div class="w-8 h-8 rounded-full bg-violet-100 text-violet-700 grid place-items-center text-sm">✨</div>
+            <div class="flex-1"><div class="text-sm">追蹤主題有 <b>新 Digest</b></div><div class="text-[11px] text-slate-500 mt-0.5">17 分鐘前 · VLAN × mDNS</div></div>
+          </a>
+          <a class="flex items-start gap-3 p-3 hover:bg-slate-50">
+            <div class="w-8 h-8 rounded-full bg-sky-100 text-sky-700 grid place-items-center text-sm">💬</div>
+            <div class="flex-1"><div class="text-sm">3 位新回覆在「漫遊頻繁斷線」</div><div class="text-[11px] text-slate-500 mt-0.5">1 小時前</div></div>
+          </a>
+        </div>
+      </div>
+    </div>
+    <button id="headerAskBtn" class="accent-grad text-white text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg shadow-sm hover:opacity-95 transition whitespace-nowrap">提問</button>
+    <div class="relative">
+      <button id="profileBtn"><img class="w-9 h-9 rounded-full ring-2 ring-white shadow hover:ring-sky-300 transition" src="https://i.pravatar.cc/72?img=12" alt="user"/></button>
+      <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-60 max-w-[calc(100vw-2rem)] bg-white rounded-2xl ring-soft-lg border border-slate-100 overflow-hidden">
+        <div class="p-4 border-b border-slate-100">
+          <div class="flex items-center gap-3">
+            <img class="w-10 h-10 rounded-full" src="https://i.pravatar.cc/72?img=12"/>
+            <div><div class="font-semibold text-sm">User</div><div class="text-[11px] text-slate-500">聲望 28 · Lv. 2</div></div>
+          </div>
+        </div>
+        <div class="py-1 text-sm">
+          <a class="block px-4 py-2 hover:bg-slate-50">我的問題</a>
+          <a class="block px-4 py-2 hover:bg-slate-50">書籤</a>
+          <a class="block px-4 py-2 hover:bg-slate-50">追蹤的專家</a>
+          <a class="block px-4 py-2 hover:bg-slate-50">設定</a>
+        </div>
+        <div class="border-t border-slate-100"><a class="block px-4 py-2 text-sm text-rose-600 hover:bg-rose-50">登出</a></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============== MODE BAND (sticky, always visible) ============== -->
+<div id="modeBand" class="sticky top-16 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-[0_1px_0_rgba(15,23,42,.02)]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-[68px] flex items-center gap-4">
+    <span class="text-sm font-semibold text-slate-700 hidden sm:inline whitespace-nowrap">我目前是</span>
+    <div class="seg-wrap-mini" id="segWrap">
+      <span class="seg-indicator-mini"></span>
+      <button id="btn-novice" class="seg-btn-mini is-active" data-mode="novice"><span>🧭</span>小白模式</button>
+      <button id="btn-direct" class="seg-btn-mini" data-mode="direct"><span>⚡</span>直達模式</button>
+    </div>
+    <span id="modeHint" class="text-[13px] text-slate-500 ml-auto hidden md:inline">AI 一步步引導你提問</span>
+  </div>
+</div>
+
+<!-- ============== HERO ============== -->
+<section class="brand-grad text-white relative overflow-hidden">
+  <div class="hero-net">
+    <div class="pulse-ring w-80 h-80 left-1/4 top-10"></div>
+    <div class="pulse-ring w-96 h-96 left-2/3 top-20" style="animation-delay:1s"></div>
+  </div>
+  <div class="relative max-w-4xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 lg:pt-20 pb-16 sm:pb-20 lg:pb-24 text-center">
+    <span class="chip bg-white/12 text-sky-100 border border-white/15">
+      <span class="dot bg-emerald-400"></span> <b id="liveCount" class="ml-1">2,418</b> 位專家在線 · 平均 3.2 分鐘回應
+    </span>
+    <h1 class="mt-5 text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight">
+      從問題 <span class="text-sky-300">→</span> <span class="text-white">直達答案。</span>
+    </h1>
+    <p class="mt-5 text-base sm:text-lg text-sky-100/85 max-w-2xl mx-auto leading-relaxed">
+      融合 AI 摘要與認證專家經驗，依你的情境，給你一條最短路徑。
+    </p>
+
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+      <button id="heroPrimaryBtn" class="bg-white text-slate-900 px-6 py-3 rounded-xl font-bold text-base shadow-2xl hover:scale-[1.02] transition flex items-center gap-2">
+        開始解決問題 <span class="text-sky-600">→</span>
+      </button>
+      <button id="heroBrowseBtn" class="bg-white/10 hover:bg-white/15 border border-white/20 text-white px-6 py-3 rounded-xl font-semibold text-base transition">
+        瀏覽解題庫
+      </button>
+    </div>
+
+    <div class="mt-10 flex items-center justify-center gap-6 sm:gap-10 text-center">
+      <div><div class="text-2xl sm:text-3xl font-extrabold">2.1k</div><div class="text-[10px] text-sky-200/70 uppercase tracking-wider mt-0.5">Digest</div></div>
+      <div class="w-px h-8 bg-white/15"></div>
+      <div><div class="text-2xl sm:text-3xl font-extrabold">312</div><div class="text-[10px] text-sky-200/70 uppercase tracking-wider mt-0.5">認證專家</div></div>
+      <div class="w-px h-8 bg-white/15"></div>
+      <div><div class="text-2xl sm:text-3xl font-extrabold">92%</div><div class="text-[10px] text-sky-200/70 uppercase tracking-wider mt-0.5">24h 驗證率</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== MAIN WORK AREA (mode-dependent) ============== -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 -mt-12 relative z-10">
+  <div class="grid lg:grid-cols-12 gap-4 sm:gap-6">
+
+    <!-- LEFT: Mode panel -->
+    <div class="lg:col-span-8">
+
+      <!-- ===== Coach (小白模式) ===== -->
+      <div id="novice-section" class="bg-white rounded-2xl ring-soft-lg p-5 sm:p-6 lg:p-7">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-xl ai-grad text-white grid place-items-center text-lg">✨</div>
+          <div class="flex-1">
+            <h2 class="text-xl font-extrabold text-slate-900">AI 問題教練</h2>
+            <p class="text-[13px] text-slate-500">即使不懂專業術語，AI 也會幫你把問題問清楚</p>
+          </div>
+          <button id="coachReset" class="hidden sm:inline-block text-xs text-slate-500 hover:text-sky-600 font-semibold">重新開始</button>
+        </div>
+
+        <!-- Progress -->
+        <div class="mt-5 flex items-center gap-3 text-[11px] text-slate-500">
+          <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+            <div id="coachProgress" class="h-full ai-grad transition-all duration-500" style="width:8%"></div>
+          </div>
+          <span><b id="coachStep" class="text-slate-700">0</b> / 2 步驟</span>
+        </div>
+
+        <ol class="mt-6 space-y-5">
+          <li>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="w-6 h-6 rounded-full bg-violet-100 text-violet-700 grid place-items-center font-bold text-xs">1</span>
+              <span class="text-sm font-semibold text-slate-700">你的問題是關於…？</span>
+            </div>
+            <div class="flex flex-wrap gap-2 pl-8" id="step1Group">
+              <button class="chip-btn chip bg-slate-50 border border-slate-200 hover:border-sky-400" data-value="連線品質問題">📶 連不上 / 訊號弱</button>
+              <button class="chip-btn chip bg-slate-50 border border-slate-200 hover:border-sky-400" data-value="設定操作問題">⚙️ 設定不知道怎麼選</button>
+              <button class="chip-btn chip bg-slate-50 border border-slate-200 hover:border-sky-400" data-value="突發故障">🚨 突然壞掉</button>
+              <button class="chip-btn chip bg-slate-50 border border-slate-200 hover:border-sky-400" data-value="第一次安裝問題">🆕 第一次安裝</button>
+            </div>
+          </li>
+          <li>
+            <div class="flex items-center gap-2 mb-2">
+              <span id="step2Num" class="w-6 h-6 rounded-full bg-slate-100 text-slate-400 grid place-items-center font-bold text-xs">2</span>
+              <span class="text-sm font-semibold text-slate-700">你的設備是？</span>
+            </div>
+            <div class="flex flex-wrap gap-2 pl-8" id="step2Group">
+              <button class="chip-btn chip bg-slate-50 border border-slate-200 hover:border-sky-400" data-value="ExpertWiFi EBR63">ExpertWiFi EBR63</button>
+              <button class="chip-btn chip bg-slate-50 border border-slate-200 hover:border-sky-400" data-value="ExpertWiFi EBM68">ExpertWiFi EBM68</button>
+              <button class="chip-btn chip bg-slate-50 border border-slate-200 hover:border-sky-400" data-value="ZenWiFi Pro XT12">ZenWiFi Pro XT12</button>
+              <button class="chip-btn chip bg-slate-50 border border-slate-200 hover:border-sky-400 text-slate-500" data-value="未知型號（AI 將協助辨識）">🤔 我不知道</button>
+            </div>
+          </li>
+          <li class="pt-2">
+            <div class="bg-gradient-to-br from-violet-50 via-white to-sky-50 rounded-2xl p-5 border border-violet-100">
+              <div class="text-[11px] uppercase tracking-wider font-bold text-violet-700">✨ AI 為你整理的問題</div>
+              <p id="composedQ" class="mt-2 text-[15px] text-slate-500 italic leading-relaxed">
+                完成上方兩個步驟，AI 會自動為你組合提問…
+              </p>
+              <div class="mt-4 flex flex-wrap items-center gap-3">
+                <button id="coachSubmit" class="accent-grad text-white text-sm font-bold px-5 py-2.5 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:opacity-95 transition" disabled>送出 → 取得 Digest 解答</button>
+                <span class="text-[11px] text-slate-500">預估解答機率 <b id="coachProb" class="text-slate-400">--</b></span>
+              </div>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- ===== Direct Dashboard (直達模式) — 關鍵字驅動 ===== -->
+      <div id="direct-section" class="hidden bg-slate-900 text-white rounded-2xl ring-soft-lg p-5 sm:p-6 lg:p-7 relative overflow-hidden">
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-sky-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-400/30 grid place-items-center text-lg">⚡</div>
+            <div class="flex-1">
+              <h2 class="text-xl font-extrabold">關鍵字直達</h2>
+              <p class="text-sm text-slate-400">點關鍵字 → 立刻看已驗證答案 · 或按 <span class="kbd" style="background:#1e293b;border-color:#334155;color:#cbd5e1">⌘K</span> 全域搜尋</p>
+            </div>
+          </div>
+
+          <!-- HOT KEYWORDS -->
+          <div class="mt-5">
+            <div class="text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-2">🔥 熱門關鍵字</div>
+            <div class="flex flex-wrap gap-2" id="dmKeywords">
+              <button class="dm-kw-chip is-hot" data-q="EBR63">#EBR63</button>
+              <button class="dm-kw-chip" data-q="漫遊">#漫遊</button>
+              <button class="dm-kw-chip" data-q="VLAN">#VLAN</button>
+              <button class="dm-kw-chip" data-q="mDNS">#mDNS</button>
+              <button class="dm-kw-chip" data-q="PoE">#PoE</button>
+              <button class="dm-kw-chip is-hot" data-q="韌體">#韌體3.0.0.4</button>
+              <button class="dm-kw-chip" data-q="Guest">#GuestWiFi</button>
+              <button class="dm-kw-chip" data-q="802.11">#802.11r</button>
+              <button class="dm-kw-chip" data-q="VPN">#VPN</button>
+              <button class="dm-kw-chip" data-q="DHCP">#DHCP</button>
+            </div>
+          </div>
+
+          <!-- Quick tiles -->
+          <div class="mt-5 grid grid-cols-2 md:grid-cols-3 gap-2">
+            <button class="text-left bg-slate-800/60 hover:bg-slate-800 border border-slate-700 rounded-xl p-3 transition">
+              <div class="text-[10px] uppercase tracking-wider text-slate-400">最近查過</div>
+              <div class="mt-0.5 text-sm font-semibold truncate">EBR63 漫遊設定</div>
+            </button>
+            <button class="text-left bg-slate-800/60 hover:bg-slate-800 border border-slate-700 rounded-xl p-3 transition">
+              <div class="text-[10px] uppercase tracking-wider text-slate-400">追蹤中</div>
+              <div class="mt-0.5 text-sm font-semibold truncate">VLAN × mDNS <span class="text-emerald-400 text-xs">●2</span></div>
+            </button>
+            <button class="text-left bg-slate-800/60 hover:bg-slate-800 border border-slate-700 rounded-xl p-3 transition">
+              <div class="text-[10px] uppercase tracking-wider text-slate-400">我的書籤</div>
+              <div class="mt-0.5 text-sm font-semibold truncate">12 篇已驗證</div>
+            </button>
+          </div>
+
+          <!-- Verified shortest answers (expert column removed) -->
+          <div class="mt-5">
+            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-2">⚡ 已驗證最短解答</div>
+            <div class="rounded-xl border border-slate-700 overflow-hidden divide-y divide-slate-800">
+              <a class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800/70 cursor-pointer">
+                <span class="text-amber-400 font-bold text-xs w-12 shrink-0">★ 4.9</span>
+                <div class="flex-1 text-sm"><b>EBR63 紅燈不停閃</b> <span class="text-slate-400">→ 韌體 3.0.0.4 已修復</span></div>
+                <span class="text-emerald-400 text-xs shrink-0">✓</span>
+                <span class="text-sky-400 text-xs shrink-0">→</span>
+              </a>
+              <a class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800/70 cursor-pointer">
+                <span class="text-amber-400 font-bold text-xs w-12 shrink-0">★ 4.8</span>
+                <div class="flex-1 text-sm"><b>會議室漫遊頻繁斷線</b> <span class="text-slate-400">→ 開 802.11k/v/r，RSSI -70</span></div>
+                <span class="text-emerald-400 text-xs shrink-0">✓</span>
+                <span class="text-sky-400 text-xs shrink-0">→</span>
+              </a>
+              <a class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800/70 cursor-pointer">
+                <span class="text-amber-400 font-bold text-xs w-12 shrink-0">★ 4.9</span>
+                <div class="flex-1 text-sm"><b>跨 VLAN 看不到印表機</b> <span class="text-slate-400">→ 啟用 mDNS Reflector</span></div>
+                <span class="text-emerald-400 text-xs shrink-0">✓</span>
+                <span class="text-sky-400 text-xs shrink-0">→</span>
+              </a>
+              <a class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800/70 cursor-pointer">
+                <span class="text-amber-400 font-bold text-xs w-12 shrink-0">★ 4.7</span>
+                <div class="flex-1 text-sm"><b>PoE 偶發跳電</b> <span class="text-slate-400">→ 計算總功耗，避開 60W 同時開機</span></div>
+                <span class="text-emerald-400 text-xs shrink-0">✓</span>
+                <span class="text-sky-400 text-xs shrink-0">→</span>
+              </a>
+              <a class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800/70 cursor-pointer">
+                <span class="text-amber-400 font-bold text-xs w-12 shrink-0">★ 4.8</span>
+                <div class="flex-1 text-sm"><b>IoT 設備外送可疑封包</b> <span class="text-slate-400">→ 後台批次封鎖腳本</span></div>
+                <span class="text-emerald-400 text-xs shrink-0">✓</span>
+                <span class="text-sky-400 text-xs shrink-0">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: Sidebar (Experts + Progress) -->
+    <aside class="lg:col-span-4 space-y-4">
+      <div class="bg-white rounded-2xl ring-soft p-4 sm:p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-bold text-slate-900">本週活躍專家</h3>
+          <a class="text-xs text-sky-600 font-semibold hover:underline">全部 →</a>
+        </div>
+        <div class="space-y-1">
+          <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 transition">
+            <img class="w-10 h-10 rounded-full ring-2 ring-amber-300" src="https://i.pravatar.cc/96?img=15"/>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-1.5 text-sm font-semibold">Eric Wu <span class="text-emerald-600 text-xs">✓</span> <span class="text-xs">🥇</span></div>
+              <div class="text-[11px] text-slate-500 truncate">ASUS 認證 · 312 解答 · ⭐ 4.9</div>
+            </div>
+            <button class="text-xs font-semibold text-sky-700 hover:underline">追蹤</button>
+          </div>
+          <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 transition">
+            <img class="w-10 h-10 rounded-full" src="https://i.pravatar.cc/96?img=33"/>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-1.5 text-sm font-semibold">Sophia Lin <span class="text-sky-600 text-xs">✓</span></div>
+              <div class="text-[11px] text-slate-500 truncate">中小企業 SI · 187 解答 · ⭐ 4.8</div>
+            </div>
+            <button class="text-xs font-semibold text-sky-700 hover:underline">追蹤</button>
+          </div>
+          <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 transition">
+            <img class="w-10 h-10 rounded-full" src="https://i.pravatar.cc/96?img=52"/>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-1.5 text-sm font-semibold">張俊豪 <span class="text-violet-600 text-xs">🎓</span></div>
+              <div class="text-[11px] text-slate-500 truncate">資訊系教授 · 96 解答 · ⭐ 5.0</div>
+            </div>
+            <button class="text-xs font-semibold text-sky-700 hover:underline">追蹤</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl ring-soft p-4 sm:p-5">
+        <h3 class="font-bold text-slate-900 mb-3">你的解題進度</h3>
+        <div>
+          <div class="flex justify-between text-xs text-slate-500 mb-1.5"><span>本月已解決</span><span class="font-semibold text-slate-700">4 / 6</span></div>
+          <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full accent-grad" style="width:67%"></div></div>
+        </div>
+        <div class="mt-4 grid grid-cols-3 gap-2 text-center">
+          <div><div class="text-xl font-extrabold text-slate-900">12</div><div class="text-[10px] text-slate-500 uppercase tracking-wider mt-0.5">追蹤</div></div>
+          <div><div class="text-xl font-extrabold text-emerald-600">3</div><div class="text-[10px] text-slate-500 uppercase tracking-wider mt-0.5">最佳解</div></div>
+          <div><div class="text-xl font-extrabold text-sky-600">28</div><div class="text-[10px] text-slate-500 uppercase tracking-wider mt-0.5">聲望</div></div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</section>
+
+<!-- ============== DIGEST FEED ============== -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 mt-12 sm:mt-16">
+  <div class="flex items-end justify-between mb-4 sm:mb-5 gap-3">
+    <div>
+      <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900">解題庫</h2>
+      <p class="text-xs sm:text-sm text-slate-500 mt-1">AI 整理 + 專家驗證的「30 秒看懂」結論卡 · <span id="feedCount" class="font-semibold text-slate-700">5</span> 則</p>
+    </div>
+    <div class="hidden md:flex bg-slate-100 rounded-lg p-1 text-xs font-semibold shrink-0" id="feedTabs">
+      <button class="tab-btn px-3 py-1.5 rounded-md bg-white shadow-sm text-slate-900" data-tab="hot">熱門</button>
+      <button class="tab-btn px-3 py-1.5 rounded-md text-slate-500 hover:text-slate-900" data-tab="latest">最新</button>
+      <button class="tab-btn px-3 py-1.5 rounded-md text-slate-500 hover:text-slate-900" data-tab="verified">已驗證</button>
+    </div>
+  </div>
+
+  <!-- Sticky filter bar (sits under header + mode band) -->
+  <div class="sticky top-[132px] z-20 bg-slate-50/95 backdrop-blur py-3 sticky-bar -mx-4 sm:-mx-6 px-4 sm:px-6" id="filterBar">
+    <div class="flex items-center gap-3">
+      <div class="chip-rail flex items-center gap-2 flex-1" id="scenarioChips">
+        <button class="filter-chip is-active" data-scenario="">全部</button>
+        <button class="filter-chip" data-scenario="office">🏢 辦公室</button>
+        <button class="filter-chip" data-scenario="factory">🏭 工廠</button>
+        <button class="filter-chip" data-scenario="vlan">🛰️ VLAN</button>
+        <button class="filter-chip" data-scenario="roaming">📶 漫遊</button>
+        <button class="filter-chip" data-scenario="security">🔐 安全</button>
+        <button class="filter-chip" data-scenario="emergency">🆘 緊急</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="feedList" class="mt-5 space-y-4">
+
+    <!-- Digest Card 1 -->
+    <article class="digest-card bg-white rounded-2xl ring-soft p-5 sm:p-6 lift" data-scenario="roaming" data-tags="漫遊 802.11 EBR63 ExpertWiFi 會議室 RSSI 斷線 wifi">
+      <div class="flex items-center gap-2 text-xs mb-3 flex-wrap">
+        <span class="chip bg-sky-100 text-sky-700">📶 無線漫遊</span>
+        <span class="chip bg-emerald-50 text-emerald-700 border border-emerald-200">✓ 已驗證</span>
+        <span class="text-slate-400 ml-1">12 分鐘前 · 閱讀 1,402</span>
+      </div>
+      <h3 class="text-[19px] font-bold leading-snug text-slate-900">ExpertWiFi 漫遊在會議室之間頻繁斷線，怎麼辦？</h3>
+
+      <div class="mt-4 grid md:grid-cols-3 gap-3">
+        <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-4">
+          <div class="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">✅ 30 秒答案</div>
+          <p class="text-[13px] text-slate-800 mt-1.5 leading-relaxed">啟用 <b>802.11k/v/r</b> 並把 <b>RSSI 門檻設為 -70dBm</b>，可解決 80% 的會議室漫遊問題。</p>
+        </div>
+        <div class="bg-sky-50/70 border border-sky-200 rounded-xl p-4">
+          <div class="text-[10px] font-bold text-sky-700 uppercase tracking-wider">🛠️ 步驟</div>
+          <ol class="text-[12.5px] text-slate-700 mt-1.5 space-y-0.5 list-decimal list-inside">
+            <li>後台 → Wireless → Roaming</li>
+            <li>勾選 802.11k/v/r</li>
+            <li>RSSI 門檻 = -70</li>
+            <li>儲存並等 30 秒</li>
+          </ol>
+        </div>
+        <div class="bg-amber-50/70 border border-amber-200 rounded-xl p-4">
+          <div class="text-[10px] font-bold text-amber-700 uppercase tracking-wider">⚠️ 注意</div>
+          <p class="text-[12.5px] text-slate-700 mt-1.5 leading-relaxed">舊版 iOS 14 以下不支援 802.11r；若仍斷線，請檢查 AP 之間訊號是否重疊 ≥ 20%。</p>
+        </div>
+      </div>
+
+      <!-- Expert callout (pulled-up quote) -->
+      <div class="mt-4 expert-callout flex gap-3 items-start">
+        <img class="w-10 h-10 rounded-full ring-2 ring-emerald-300 shrink-0" src="https://i.pravatar.cc/64?img=15"/>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-1.5 text-xs">
+            <span class="font-bold text-slate-900">Eric Wu</span>
+            <span class="text-emerald-600">✓ 認證</span>
+            <span class="text-slate-400">·</span>
+            <span class="text-slate-500">ASUS 8 年實戰 · 312 解答</span>
+          </div>
+          <p class="quote text-sm mt-1">「實戰中我會把 RSSI 調 <b>-67dBm</b>（不是 -70），現場更穩。VoIP 通話建議搭配 DTIM=1。」</p>
+        </div>
+      </div>
+
+      <div class="mt-4 flex items-center justify-end gap-1 flex-wrap">
+        <button class="like-btn px-2.5 py-1.5 text-xs font-semibold text-slate-600 rounded-lg hover:bg-slate-100 transition" data-count="248">👍 <span class="count">248</span></button>
+        <button class="px-2.5 py-1.5 text-xs font-semibold text-slate-600 rounded-lg hover:bg-slate-100">💬 34</button>
+        <button class="bookmark-btn px-2.5 py-1.5 text-xs font-semibold text-slate-600 rounded-lg hover:bg-slate-100 transition">🔖</button>
+        <button class="open-detail-btn accent-grad text-white text-xs font-bold px-3.5 py-1.5 rounded-lg hover:opacity-95 ml-1" data-title="ExpertWiFi 漫遊在會議室之間頻繁斷線，怎麼辦？">查看完整解答</button>
+      </div>
+    </article>
+
+    <!-- Digest Card 2 -->
+    <article class="digest-card bg-white rounded-2xl ring-soft p-5 sm:p-6 lift" data-scenario="vlan" data-tags="VLAN mDNS reflector 印表機 跨網段 ExpertWiFi 廣播 multicast">
+      <div class="flex items-center gap-2 text-xs mb-3 flex-wrap">
+        <span class="chip bg-sky-100 text-sky-700">🛰️ VLAN</span>
+        <span class="chip bg-rose-50 text-rose-700 border border-rose-200">🔥 熱門</span>
+        <span class="text-slate-400 ml-1">2 小時前 · 閱讀 3,981</span>
+      </div>
+      <h3 class="text-[19px] font-bold leading-snug text-slate-900">多 VLAN 環境下，印表機只有部分電腦看得到？</h3>
+
+      <div class="mt-4 grid md:grid-cols-3 gap-3">
+        <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-4">
+          <div class="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">✅ 30 秒答案</div>
+          <p class="text-[13px] text-slate-800 mt-1.5 leading-relaxed">啟用 <b>mDNS Reflector</b> 並允許跨 VLAN 廣播，5 分鐘解決。</p>
+        </div>
+        <div class="bg-sky-50/70 border border-sky-200 rounded-xl p-4">
+          <div class="text-[10px] font-bold text-sky-700 uppercase tracking-wider">🛠️ 步驟</div>
+          <ol class="text-[12.5px] text-slate-700 mt-1.5 space-y-0.5 list-decimal list-inside">
+            <li>Network → VLAN</li>
+            <li>啟用 mDNS Reflector</li>
+            <li>勾選需要的 VLAN</li>
+            <li>套用設定</li>
+          </ol>
+        </div>
+        <div class="bg-amber-50/70 border border-amber-200 rounded-xl p-4">
+          <div class="text-[10px] font-bold text-amber-700 uppercase tracking-wider">⚠️ 注意</div>
+          <p class="text-[12.5px] text-slate-700 mt-1.5 leading-relaxed">若有 Guest VLAN，請<b>不要</b>勾選以避免訪客看到內部印表機。</p>
+        </div>
+      </div>
+
+      <!-- Expert callout -->
+      <div class="mt-4 expert-callout flex gap-3 items-start">
+        <img class="w-10 h-10 rounded-full ring-2 ring-sky-300 shrink-0" src="https://i.pravatar.cc/64?img=33"/>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-1.5 text-xs">
+            <span class="font-bold text-slate-900">Sophia Lin</span>
+            <span class="text-sky-600">✓ 認證</span>
+            <span class="text-slate-400">·</span>
+            <span class="text-slate-500">中小企業 SI · 187 解答</span>
+          </div>
+          <p class="quote text-sm mt-1">「現場最常出包是 Guest VLAN 也勾了 mDNS — <b>訪客就能看到內部印表機</b>。一定只勾內部 VLAN。」</p>
+        </div>
+      </div>
+
+      <div class="mt-4 flex items-center justify-end gap-1 flex-wrap">
+        <button class="like-btn px-2.5 py-1.5 text-xs font-semibold text-slate-600 rounded-lg hover:bg-slate-100 transition" data-count="519">👍 <span class="count">519</span></button>
+        <button class="px-2.5 py-1.5 text-xs font-semibold text-slate-600 rounded-lg hover:bg-slate-100">💬 78</button>
+        <button class="bookmark-btn px-2.5 py-1.5 text-xs font-semibold text-slate-600 rounded-lg hover:bg-slate-100 transition">🔖</button>
+        <button class="open-detail-btn accent-grad text-white text-xs font-bold px-3.5 py-1.5 rounded-lg hover:opacity-95 ml-1" data-title="多 VLAN 環境下，印表機只有部分電腦看得到？">查看完整解答</button>
+      </div>
+    </article>
+
+    <!-- Compact 3 -->
+    <article class="digest-card bg-white rounded-2xl ring-soft p-5 flex items-start gap-4 lift" data-scenario="security" data-tags="安全 IoT CCTV 入侵 封鎖 防火牆 firewall 工廠">
+      <div class="text-center w-12 shrink-0 pt-1">
+        <div class="text-emerald-600 font-bold text-lg">42</div>
+        <div class="text-[10px] text-slate-400 uppercase tracking-wider">解答</div>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 text-xs mb-1.5 flex-wrap">
+          <span class="chip bg-slate-100 text-slate-700">🔐 安全</span>
+          <span class="text-slate-400">昨天</span>
+        </div>
+        <h4 class="font-bold text-slate-900 hover:text-sky-700 cursor-pointer">如何快速封鎖被入侵的 IoT 設備？(內含腳本)</h4>
+        <p class="text-xs text-slate-500 mt-1 line-clamp-2">工廠 CCTV 持續對外送封包，懷疑被入侵。請問有沒有快速的方法在 ExpertWiFi 後台批次封鎖…</p>
+        <div class="mt-2 flex items-center gap-4 text-xs text-slate-500">
+          <span>💬 27</span><span>👁 1,204</span><span class="text-emerald-600 font-semibold">✅ 3 解</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- Compact 4 -->
+    <article class="digest-card bg-white rounded-2xl ring-soft p-5 flex items-start gap-4 lift" data-scenario="factory" data-tags="工廠 PLC 斷線 產線 排查 新手 industrial">
+      <div class="text-center w-12 shrink-0 pt-1">
+        <div class="text-emerald-600 font-bold text-lg">28</div>
+        <div class="text-[10px] text-slate-400 uppercase tracking-wider">解答</div>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 text-xs mb-1.5 flex-wrap">
+          <span class="chip bg-slate-100 text-slate-700">🏭 工廠</span>
+          <span class="chip bg-emerald-50 text-emerald-700 border border-emerald-200">新手友善</span>
+          <span class="text-slate-400">3 天前</span>
+        </div>
+        <h4 class="font-bold text-slate-900 hover:text-sky-700 cursor-pointer">產線 PLC 設備偶發斷線，從哪裡開始查？</h4>
+        <p class="text-xs text-slate-500 mt-1 line-clamp-2">第一次接觸網路設定，老闆要我排查產線斷線問題。求一個給新手的檢查清單…</p>
+        <div class="mt-2 flex items-center gap-4 text-xs text-slate-500">
+          <span>💬 19</span><span>👁 882</span><span class="text-violet-600 font-semibold">🧭 AI 引導</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- Compact 5 -->
+    <article class="digest-card bg-white rounded-2xl ring-soft p-5 flex items-start gap-4 lift" data-scenario="office" data-tags="辦公室 Guest WiFi 訪客 隔離 EBR63">
+      <div class="text-center w-12 shrink-0 pt-1">
+        <div class="text-emerald-600 font-bold text-lg">16</div>
+        <div class="text-[10px] text-slate-400 uppercase tracking-wider">解答</div>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 text-xs mb-1.5 flex-wrap">
+          <span class="chip bg-slate-100 text-slate-700">🏢 辦公室</span>
+          <span class="text-slate-400">5 天前</span>
+        </div>
+        <h4 class="font-bold text-slate-900 hover:text-sky-700 cursor-pointer">辦公室 Guest WiFi 如何完全隔離內部資源？</h4>
+        <p class="text-xs text-slate-500 mt-1 line-clamp-2">想讓訪客只能上網，不能看到內部 NAS 與印表機。ExpertWiFi 該怎麼設定才最安全…</p>
+        <div class="mt-2 flex items-center gap-4 text-xs text-slate-500">
+          <span>💬 11</span><span>👁 612</span><span class="text-emerald-600 font-semibold">✅ 最佳解</span>
+        </div>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- Empty state -->
+  <div id="feedEmpty" class="hidden text-center py-16 bg-white rounded-2xl ring-soft">
+    <div class="text-5xl mb-3">🔍</div>
+    <div class="font-bold text-slate-900">沒有符合的 Digest</div>
+    <div class="text-xs text-slate-500 mt-1">試試清除篩選，或讓 AI 幫你問一個新的問題</div>
+    <button id="emptyAskBtn" class="mt-4 accent-grad text-white text-sm font-semibold px-4 py-2 rounded-lg">讓 AI 幫我問</button>
+  </div>
+
+  <div class="text-center mt-6">
+    <button class="bg-white border border-slate-200 hover:border-sky-400 hover:text-sky-700 text-sm font-semibold px-5 py-2.5 rounded-lg shadow-sm transition">載入更多</button>
+  </div>
+</section>
+
+<!-- ============== INSIGHT BANNER ============== -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 mt-16 sm:mt-20">
+  <div class="rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 bg-gradient-to-br from-slate-900 via-indigo-950 to-violet-950 text-white relative overflow-hidden">
+    <div class="absolute -top-20 -right-20 w-96 h-96 bg-violet-500/20 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-16 -left-12 w-80 h-80 bg-sky-500/15 rounded-full blur-3xl"></div>
+    <div class="relative grid md:grid-cols-12 gap-6 lg:gap-8 items-start">
+      <div class="md:col-span-5">
+        <span class="chip bg-white/10 border border-white/15 text-sky-200">設計反思 · v2</span>
+        <h2 class="mt-4 text-3xl sm:text-[34px] lg:text-4xl font-extrabold leading-tight">不只專家，<br/>也陪伴每一位小白。</h2>
+        <p class="text-[14px] sm:text-[15px] text-slate-300 mt-3 sm:mt-4 leading-relaxed">我們驚訝地發現：使用者橫跨從 Domain 專家到完全沒背景的新手。所以我們重新設計了整個引導體驗。</p>
+      </div>
+      <div class="md:col-span-7 grid sm:grid-cols-2 gap-3">
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition">
+          <div class="text-2xl mb-2">🧭</div>
+          <div class="font-bold">引導式提問</div>
+          <p class="text-xs text-slate-400 mt-1 leading-relaxed">AI 順著你的思維拆解問題，不需要你懂專業術語。</p>
+        </div>
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition">
+          <div class="text-2xl mb-2">📰</div>
+          <div class="font-bold">30 秒 Digest</div>
+          <p class="text-xs text-slate-400 mt-1 leading-relaxed">三欄式結論卡：答案 / 步驟 / 注意事項，一眼看完。</p>
+        </div>
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition">
+          <div class="text-2xl mb-2">🎚️</div>
+          <div class="font-bold">情境化體驗</div>
+          <p class="text-xs text-slate-400 mt-1 leading-relaxed">辦公室、工廠、第一次安裝… 不同場景，不同引導。</p>
+        </div>
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition">
+          <div class="text-2xl mb-2">🤝</div>
+          <div class="font-bold">AI + 專家融合</div>
+          <p class="text-xs text-slate-400 mt-1 leading-relaxed">AI 給速度，專家給可靠；兩者並列、不互相取代。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer class="max-w-7xl mx-auto px-4 sm:px-6 mt-12 sm:mt-16 pb-10 sm:pb-12">
+  <div class="border-t border-slate-200 pt-6 sm:pt-8 flex flex-wrap items-center justify-between gap-4 text-sm">
+    <div class="flex items-center gap-2.5">
+      <div class="w-7 h-7 rounded-md brand-grad text-white grid place-items-center font-bold">A</div>
+      <span class="font-bold text-slate-900">ASUS Enterprise Networking</span>
+      <span class="text-slate-300">·</span>
+      <span class="text-slate-500 text-xs">Community Prototype</span>
+    </div>
+    <div class="flex items-center gap-5 text-xs text-slate-500">
+      <a class="hover:text-slate-900">解題庫</a>
+      <a class="hover:text-slate-900">專家</a>
+      <a class="hover:text-slate-900">文件</a>
+      <a class="hover:text-slate-900">客服</a>
+    </div>
+    <div class="text-[11px] text-slate-400">© 2026 ASUSTeK · Persona C × Surprise Insights v2</div>
+  </div>
+</footer>
+
+<!-- ============== TOAST ============== -->
+<div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-full bg-slate-900 text-white text-sm font-semibold shadow-2xl opacity-0 translate-y-2 transition-all duration-300 pointer-events-none flex items-center gap-2">
+  <span id="toastIcon">🧭</span><span id="toastText">已切換</span>
+</div>
+
+<!-- ============== AI COPILOT ============== -->
+<div class="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
+  <button id="copilotBubble" class="ai-grad text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-2xl hover:scale-105 transition-transform ring-4 ring-white" title="AI 助理">
+    ✨
+  </button>
+  <div id="copilotPanel" class="copilot-panel absolute bottom-16 right-0 w-[calc(100vw-2rem)] sm:w-[360px] max-w-[400px] bg-white rounded-2xl ring-soft-lg border border-slate-200 overflow-hidden">
+    <div class="ai-grad text-white p-4 flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-lg bg-white/20 grid place-items-center text-lg">✨</div>
+      <div class="flex-1">
+        <div class="font-bold text-sm">ASUS AI 助理</div>
+        <div class="text-[11px] opacity-90 flex items-center gap-1"><span class="dot bg-emerald-300"></span> 線上 · 融合專家知識庫</div>
+      </div>
+      <button id="copilotClose" class="opacity-80 hover:opacity-100 text-xl leading-none w-7 h-7 grid place-items-center rounded-full hover:bg-white/15">×</button>
+    </div>
+    <div id="copilotChat" class="p-4 max-h-80 overflow-y-auto space-y-3 text-sm">
+      <div class="bg-slate-100 rounded-2xl rounded-tl-sm p-3 max-w-[92%]">
+        <div class="flex items-center justify-between gap-2 mb-1.5">
+          <span class="ai-pill">✨ AI 助理</span>
+        </div>
+        <div class="text-sm leading-relaxed">哈囉 👋 我可以幫你整理問題、推薦專家或對照觀點。</div>
+        <div class="mt-2 pt-2 border-t border-dashed border-slate-300 text-[11px] text-slate-500 leading-relaxed">
+          💡 每個回答都會標示 <b class="text-slate-700">可信度</b>。若信心低於 70%，我會主動建議你<b class="text-rose-700">轉接專家</b>。
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-slate-100 p-3 bg-slate-50/50">
+      <div class="flex flex-wrap gap-1.5 mb-2" id="copilotSuggestions">
+        <button class="suggest-btn chip bg-white border border-slate-200 hover:border-violet-400 text-slate-700" data-q="EBR63 紅燈閃爍">EBR63 紅燈</button>
+        <button class="suggest-btn chip bg-white border border-slate-200 hover:border-violet-400 text-slate-700" data-q="會議室漫遊斷線">會議室漫遊</button>
+        <button class="suggest-btn chip bg-white border border-slate-200 hover:border-violet-400 text-slate-700" data-q="VLAN 印表機看不到">跨 VLAN</button>
+        <button class="suggest-btn chip bg-white border border-slate-200 hover:border-violet-400 text-slate-700" data-q="PoE 跳電">PoE 跳電</button>
+      </div>
+      <div class="flex items-center gap-2 bg-white rounded-xl px-3 py-2 border border-slate-200 focus-within:ring-2 focus-within:ring-violet-300">
+        <input id="copilotInput" class="bg-transparent outline-none text-sm flex-1" placeholder="想問什麼？" />
+        <button id="copilotSend" class="ai-grad text-white text-xs font-bold px-3 py-1.5 rounded-lg">送出</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============== COMPARE MODAL ============== -->
+<div id="compareModal" class="hidden fixed inset-0 z-50 modal-back items-center justify-center p-3 sm:p-4">
+  <div class="modal-card bg-white rounded-2xl sm:rounded-3xl max-w-5xl w-full max-h-[92vh] overflow-hidden flex flex-col ring-soft-lg">
+    <div class="p-5 sm:p-6 border-b border-slate-100 flex items-start justify-between gap-3">
+      <div class="flex-1 min-w-0">
+        <span class="chip bg-violet-100 text-violet-700">⚖️ AI vs 專家 對照</span>
+        <h3 class="text-lg sm:text-xl font-extrabold mt-2 text-slate-900" id="compareQuestion">同一個問題，兩種視角</h3>
+        <p class="text-xs text-slate-500 mt-1">系統會自動整合兩邊的優點，給你一個融合建議。</p>
+      </div>
+      <button id="compareClose" class="text-slate-400 hover:text-slate-700 text-2xl leading-none w-9 h-9 grid place-items-center rounded-full hover:bg-slate-100 shrink-0">×</button>
+    </div>
+    <div class="overflow-y-auto p-4 sm:p-6 grid md:grid-cols-2 gap-3 sm:gap-4 bg-slate-50">
+      <!-- AI -->
+      <div class="rounded-2xl border-2 border-violet-200 p-5 bg-white">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-9 h-9 rounded-lg ai-grad text-white grid place-items-center">✨</div>
+            <div>
+              <div class="font-bold text-sm">AI 即時答案</div>
+              <div class="text-[11px] text-slate-500">< 5 秒 · 12 篇文件</div>
+            </div>
+          </div>
+          <span class="chip bg-violet-100 text-violet-700">信心 84%</span>
+        </div>
+        <ul class="text-[13px] text-slate-700 space-y-1.5 list-disc list-inside leading-relaxed">
+          <li>啟用 802.11k/v/r 漫遊機制</li>
+          <li>建議 RSSI 門檻 -70dBm</li>
+          <li>檢查 AP 訊號重疊區是否 ≥ 20%</li>
+          <li>若使用 VoIP，建議降低 DTIM</li>
+        </ul>
+        <div class="mt-3 text-[11px] text-violet-700 bg-violet-50 p-2 rounded-lg"><b>✨ 適合：</b>快速理解大方向、做初步判斷</div>
+      </div>
+      <!-- Expert -->
+      <div class="rounded-2xl border-2 border-emerald-300 p-5 bg-white relative">
+        <span class="absolute -top-3 left-5 chip bg-amber-400 text-amber-900 shadow font-bold">🏆 Best Answer</span>
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <img class="w-9 h-9 rounded-lg ring-2 ring-emerald-300" src="https://i.pravatar.cc/72?img=15"/>
+            <div>
+              <div class="font-bold text-sm flex items-center gap-1">Eric Wu <span class="text-emerald-600 text-xs">✓</span></div>
+              <div class="text-[11px] text-slate-500">8 年實戰 · 312 解答</div>
+            </div>
+          </div>
+          <span class="chip bg-emerald-100 text-emerald-700">⭐ 4.9</span>
+        </div>
+        <div class="text-[13px] text-slate-700 space-y-2 leading-relaxed">
+          <p>「我在三個客戶現場踩過完全一樣的問題，<b>單純開 11k/v/r 不夠</b>。」</p>
+          <ol class="list-decimal list-inside space-y-1">
+            <li>RSSI 調 <b>-67dBm</b>（不是 -70），實測更穩</li>
+            <li>5GHz Beacon Interval 改 100ms</li>
+            <li>關閉 Smart Connect 中的 6GHz auto switching</li>
+          </ol>
+          <p class="text-xs text-slate-500 mt-2">📎 <a class="text-sky-600 underline">會議室漫遊調校 SOP（含實機數據）</a></p>
+        </div>
+        <div class="mt-3 text-[11px] text-emerald-700 bg-emerald-50 p-2 rounded-lg"><b>✅ 適合：</b>已試過一般方法仍無解、需要實戰調校</div>
+      </div>
+    </div>
+    <div class="border-t border-slate-100 bg-gradient-to-r from-amber-50 to-sky-50 p-4 sm:p-5">
+      <div class="flex items-start gap-3">
+        <div class="w-9 h-9 rounded-lg bg-amber-400 text-amber-900 grid place-items-center font-bold text-sm shrink-0">⭐</div>
+        <div>
+          <div class="font-bold text-sm text-slate-900">Best of Both · 融合建議</div>
+          <p class="text-[13px] text-slate-700 leading-relaxed mt-1">先依 AI 啟用 802.11k/v/r 作為基礎，再依 Eric 的實戰建議將 RSSI 微調為 -67dBm 並關閉 6GHz auto switching。<b>建議先在 1 個會議室試點驗證，再推全公司。</b></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============== ONBOARDING TOUR ============== -->
+<div id="tourBack" class="tour-back hidden">
+  <div id="tourPop" class="tour-pop bg-white rounded-2xl ring-soft-lg p-5">
+    <div class="flex items-center justify-between">
+      <span class="chip ai-grad text-white">快速導覽</span>
+      <button id="tourSkip" class="text-xs text-slate-500 hover:text-slate-900">跳過</button>
+    </div>
+    <h4 id="tourTitle" class="font-bold text-lg mt-2"></h4>
+    <p id="tourBody" class="text-sm text-slate-600 mt-1 leading-relaxed"></p>
+    <div class="mt-4 flex items-center justify-between">
+      <div id="tourDots" class="flex gap-1.5"></div>
+      <button id="tourNext" class="accent-grad text-white text-sm font-semibold px-4 py-2 rounded-lg">下一步 →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ============ TOAST ============
+  const toast = document.getElementById('toast');
+  const toastIcon = document.getElementById('toastIcon');
+  const toastText = document.getElementById('toastText');
+  function showToast(icon, text) {
+    toastIcon.textContent = icon; toastText.textContent = text;
+    toast.classList.remove('opacity-0','translate-y-2');
+    toast.classList.add('opacity-100','translate-y-0');
+    clearTimeout(window._t);
+    window._t = setTimeout(() => {
+      toast.classList.add('opacity-0','translate-y-2');
+      toast.classList.remove('opacity-100','translate-y-0');
+    }, 2200);
+  }
+
+  // ============ MODE TOGGLE ============
+  const btnN = document.getElementById('btn-novice');
+  const btnD = document.getElementById('btn-direct');
+  const segWrap = document.getElementById('segWrap');
+  const secN = document.getElementById('novice-section');
+  const secD = document.getElementById('direct-section');
+  const modeHint = document.getElementById('modeHint');
+
+  function setMode(mode, silent) {
+    if (mode === 'direct') {
+      segWrap.classList.add('is-direct');
+      btnD.classList.add('is-active'); btnN.classList.remove('is-active');
+      secN.classList.add('hidden'); secD.classList.remove('hidden');
+      if (modeHint) modeHint.textContent = '直接點關鍵字 · 跳過引導';
+      if (!silent) showToast('⚡','已切換到 直達模式');
+    } else {
+      segWrap.classList.remove('is-direct');
+      btnN.classList.add('is-active'); btnD.classList.remove('is-active');
+      secD.classList.add('hidden'); secN.classList.remove('hidden');
+      if (modeHint) modeHint.textContent = 'AI 一步步引導你提問';
+      if (!silent) showToast('🧭','已切換到 小白模式');
+    }
+    try { localStorage.setItem('asus-mode', mode); } catch(e){}
+  }
+  btnN.addEventListener('click', () => setMode('novice'));
+  btnD.addEventListener('click', () => setMode('direct'));
+  try { if (localStorage.getItem('asus-mode') === 'direct') setMode('direct', true); } catch(e){}
+
+  // Hero CTAs
+  document.getElementById('heroPrimaryBtn').addEventListener('click', () => {
+    (secN.classList.contains('hidden') ? secD : secN).scrollIntoView({behavior:'smooth', block:'start'});
+  });
+  document.getElementById('heroBrowseBtn').addEventListener('click', () => {
+    document.getElementById('feedList').scrollIntoView({behavior:'smooth', block:'start'});
+  });
+  document.getElementById('headerAskBtn').addEventListener('click', () => {
+    setMode('novice'); setTimeout(() => secN.scrollIntoView({behavior:'smooth', block:'start'}), 100);
+  });
+
+  // ============ AI QUESTION COACH ============
+  const step1Group = document.getElementById('step1Group');
+  const step2Group = document.getElementById('step2Group');
+  const step2Num = document.getElementById('step2Num');
+  const composedQ = document.getElementById('composedQ');
+  const coachSubmit = document.getElementById('coachSubmit');
+  const coachProb = document.getElementById('coachProb');
+  const coachProgress = document.getElementById('coachProgress');
+  const coachStep = document.getElementById('coachStep');
+  const coachReset = document.getElementById('coachReset');
+  let s1 = null, s2 = null;
+
+  function selectChip(group, value) {
+    group.querySelectorAll('.chip-btn').forEach(b => {
+      if (b.getAttribute('data-value') === value) { b.classList.add('is-selected'); b.classList.remove('is-dim'); }
+      else { b.classList.remove('is-selected'); b.classList.add('is-dim'); }
+    });
+  }
+  function updateCoach() {
+    let n = 0;
+    if (s1) { n++; step2Num.classList.remove('bg-slate-100','text-slate-400'); step2Num.classList.add('bg-violet-100','text-violet-700');}
+    if (s2) n++;
+    coachStep.textContent = n;
+    coachProgress.style.width = (8 + n*46) + '%';
+    if (s1 && s2) {
+      composedQ.classList.remove('italic','text-slate-500'); composedQ.classList.add('text-slate-800');
+      composedQ.innerHTML = `「我使用 <b>${s2}</b>，遇到<b>${s1}</b>，希望能找到具體可行的解法。」`;
+      coachSubmit.disabled = false;
+      coachProb.textContent = '94%'; coachProb.classList.remove('text-slate-400'); coachProb.classList.add('text-emerald-600');
+    } else if (s1 || s2) {
+      composedQ.classList.add('italic'); composedQ.textContent = '再選一個選項，AI 就能組出完整提問了…';
+    }
+  }
+  step1Group.addEventListener('click', e => {
+    const b = e.target.closest('.chip-btn'); if (!b) return;
+    s1 = b.getAttribute('data-value'); selectChip(step1Group, s1); updateCoach();
+  });
+  step2Group.addEventListener('click', e => {
+    const b = e.target.closest('.chip-btn'); if (!b) return;
+    s2 = b.getAttribute('data-value'); selectChip(step2Group, s2); updateCoach();
+  });
+  coachSubmit.addEventListener('click', () => {
+    coachSubmit.disabled = true;
+    coachSubmit.innerHTML = '<span class="inline-block animate-pulse">AI 思考中…</span>';
+    setTimeout(() => {
+      coachSubmit.innerHTML = '✓ 已送出！查看 Digest ↓';
+      showToast('✨','找到 3 則相關 Digest');
+      document.getElementById('feedList').scrollIntoView({behavior:'smooth', block:'start'});
+    }, 900);
+  });
+  coachReset.addEventListener('click', () => {
+    s1 = null; s2 = null;
+    [step1Group, step2Group].forEach(g => g.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('is-selected','is-dim')));
+    composedQ.innerHTML = '完成上方兩個步驟，AI 會自動為你組合提問…';
+    composedQ.classList.add('italic','text-slate-500'); composedQ.classList.remove('text-slate-800');
+    coachSubmit.disabled = true; coachSubmit.innerHTML = '送出 → 取得 Digest 解答';
+    coachProb.textContent = '--'; coachProb.classList.remove('text-emerald-600'); coachProb.classList.add('text-slate-400');
+    step2Num.className = 'w-6 h-6 rounded-full bg-slate-100 text-slate-400 grid place-items-center font-bold text-xs';
+    coachStep.textContent = '0'; coachProgress.style.width = '8%';
+  });
+
+  // ============ SEARCH + SCENARIO FILTER ============
+  const cards = () => document.querySelectorAll('.digest-card');
+  const feedEmpty = document.getElementById('feedEmpty');
+  const feedCount = document.getElementById('feedCount');
+  let curQ = '', curS = '';
+  function applyFilter() {
+    const q = curQ.trim().toLowerCase();
+    let visible = 0;
+    cards().forEach(c => {
+      const tags = (c.getAttribute('data-tags') || '').toLowerCase();
+      const text = c.textContent.toLowerCase();
+      const sc = c.getAttribute('data-scenario');
+      const okQ = !q || tags.includes(q) || text.includes(q);
+      const okS = !curS || sc === curS;
+      if (okQ && okS) { c.style.display = ''; c.classList.add('fade-in'); visible++; }
+      else { c.style.display = 'none'; }
+    });
+    feedCount.textContent = visible;
+    feedEmpty.classList.toggle('hidden', visible !== 0);
+  }
+  const topSearch = document.getElementById('topSearch');
+  topSearch.addEventListener('input', e => { curQ = e.target.value; applyFilter(); });
+
+  // Direct-mode keyword chips → drive global search + jump to feed
+  const dmKeywords = document.getElementById('dmKeywords');
+  if (dmKeywords) {
+    dmKeywords.addEventListener('click', e => {
+      const b = e.target.closest('.dm-kw-chip'); if (!b) return;
+      const q = b.getAttribute('data-q');
+      topSearch.value = q; curQ = q; applyFilter();
+      document.getElementById('feedList').scrollIntoView({behavior:'smooth', block:'start'});
+      showToast('🔎', `已套用關鍵字 #${q}`);
+    });
+  }
+
+  const scenarioChips = document.getElementById('scenarioChips');
+  scenarioChips.addEventListener('click', e => {
+    const b = e.target.closest('.filter-chip'); if (!b) return;
+    scenarioChips.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('is-active'));
+    b.classList.add('is-active');
+    curS = b.getAttribute('data-scenario') || '';
+    applyFilter();
+  });
+  document.getElementById('emptyAskBtn').addEventListener('click', () => {
+    setMode('novice'); setTimeout(()=>secN.scrollIntoView({behavior:'smooth',block:'start'}), 100);
+  });
+
+  // ============ VOTE / BOOKMARK ============
+  document.querySelectorAll('.like-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      const span = b.querySelector('.count');
+      let n = parseInt(span.textContent.replace(/,/g,''), 10);
+      if (b.classList.contains('is-on')) { n--; b.classList.remove('is-on'); }
+      else { n++; b.classList.add('is-on'); showToast('👍','感謝肯定！'); }
+      span.textContent = n.toLocaleString();
+    });
+  });
+  document.querySelectorAll('.bookmark-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      b.classList.toggle('is-on');
+      if (b.classList.contains('is-on')) showToast('🔖','已加入書籤');
+    });
+  });
+
+  // ============ FEED TABS ============
+  document.querySelectorAll('.tab-btn').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(x => { x.classList.remove('bg-white','shadow-sm','text-slate-900'); x.classList.add('text-slate-500'); });
+      t.classList.add('bg-white','shadow-sm','text-slate-900'); t.classList.remove('text-slate-500');
+    });
+  });
+
+  // ============ COMPARE MODAL ============
+  const compareModal = document.getElementById('compareModal');
+  const compareQuestion = document.getElementById('compareQuestion');
+  function openCompare(title) {
+    if (title) compareQuestion.textContent = title;
+    compareModal.classList.remove('hidden'); compareModal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeCompare() {
+    compareModal.classList.add('hidden'); compareModal.classList.remove('flex');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('compareClose').addEventListener('click', closeCompare);
+  compareModal.addEventListener('click', e => { if (e.target === compareModal) closeCompare(); });
+  document.querySelectorAll('.open-detail-btn').forEach(b => {
+    b.addEventListener('click', () => openCompare(b.getAttribute('data-title')));
+  });
+
+  // ============ DROPDOWNS ============
+  function bindDropdown(btnId, ddId) {
+    const btn = document.getElementById(btnId);
+    const dd = document.getElementById(ddId);
+    btn.addEventListener('click', e => { e.stopPropagation(); dd.classList.toggle('hidden'); });
+    document.addEventListener('click', e => { if (!dd.contains(e.target) && e.target !== btn) dd.classList.add('hidden'); });
+  }
+  bindDropdown('notifBtn','notifDropdown');
+  bindDropdown('profileBtn','profileDropdown');
+
+  // ============ COPILOT ============
+  const cBubble = document.getElementById('copilotBubble');
+  const cPanel = document.getElementById('copilotPanel');
+  const cClose = document.getElementById('copilotClose');
+  const cInput = document.getElementById('copilotInput');
+  const cSend = document.getElementById('copilotSend');
+  const cChat = document.getElementById('copilotChat');
+  function openCopilot() { cPanel.classList.add('is-open'); setTimeout(()=>cInput.focus(), 200); }
+  function closeCopilot() { cPanel.classList.remove('is-open'); }
+  cBubble.addEventListener('click', () => cPanel.classList.contains('is-open') ? closeCopilot() : openCopilot());
+  cClose.addEventListener('click', closeCopilot);
+
+  const aiResponses = {
+    'EBR63 紅燈閃爍': {
+      text: '✅ 紅燈通常代表：\n① 韌體 < 3.0.0.4\n② 接到 WAN 但無 DHCP\n③ 硬體初始化中\n\n**最短路徑**：先更新韌體到 3.0.0.4，再做 30/30/30 重置。',
+      confidence: 92, sources: 14, expertEndorsed: true,
+    },
+    '會議室漫遊斷線': {
+      text: '✅ 核心：啟用 **802.11k/v/r**，RSSI 門檻 -70dBm。\n\n💡 Eric Wu 補充：實戰中 -67dBm 更穩。點 Digest 卡上的「查看完整解答」可看 AI vs 專家對照。',
+      confidence: 88, sources: 12, expertEndorsed: true,
+    },
+    'VLAN 印表機看不到': {
+      text: '✅ 5 分鐘可解！\n\n後台 → Network → VLAN → 啟用 **mDNS Reflector**，只勾選內部 VLAN（不要勾 Guest）。',
+      confidence: 95, sources: 9, expertEndorsed: true,
+    },
+    'PoE 跳電': {
+      text: '⚡ PoE 跳電通常是總功耗超過 switch 預算。\n\n建議檢查：\n① 算每個 port 的瓦數總和\n② 避免 4 個 60W class-4 設備同時啟動\n③ 必要時改用獨立 PoE injector',
+      confidence: 76, sources: 6, expertEndorsed: false,
+    },
+  };
+  function getResponse(q) {
+    return aiResponses[q] || {
+      text: `我為「${q}」找到 2 篇可能相關的內容，但比對結果匹配度不高。\n建議補充更多細節（型號、錯誤訊息、已試過什麼），或直接讓專家協助。`,
+      confidence: 48, sources: 2, expertEndorsed: false,
+    };
+  }
+  function confidenceLevel(s) {
+    if (s >= 85) return { label:'高信心', pill:'cf-pill-high', fill:'cf-fill-high' };
+    if (s >= 70) return { label:'中信心', pill:'cf-pill-mid', fill:'cf-fill-mid' };
+    return { label:'低信心', pill:'cf-pill-low', fill:'cf-fill-low' };
+  }
+  function appendChat(role, html) {
+    const wrap = document.createElement('div');
+    if (role === 'user') {
+      wrap.className = 'flex justify-end';
+      wrap.innerHTML = `<div class="accent-grad text-white rounded-2xl rounded-tr-sm p-3 max-w-[88%] text-sm">${html}</div>`;
+    } else {
+      wrap.className = 'fade-in';
+      wrap.innerHTML = `<div class="bg-slate-100 rounded-2xl rounded-tl-sm p-3 max-w-[92%]">
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <span class="ai-pill">✨ AI</span>
+          <div class="ai-cf"></div>
+        </div>
+        <div class="text-sm body leading-relaxed"></div>
+      </div>`;
+    }
+    cChat.appendChild(wrap); cChat.scrollTop = cChat.scrollHeight; return wrap;
+  }
+  function typeOut(node, text, done) {
+    let i = 0; const target = node.querySelector('.body') || node;
+    target.classList.add('typing');
+    const tick = () => {
+      target.innerHTML = text.slice(0, i).replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>');
+      if (i < text.length) { i += 2; setTimeout(tick, 14); cChat.scrollTop = cChat.scrollHeight; }
+      else { target.classList.remove('typing'); done && done(); }
+    };
+    tick();
+  }
+  function handleAsk(q) {
+    if (!q) return;
+    appendChat('user', q); cInput.value = '';
+    const resp = getResponse(q);
+    const node = appendChat('ai','');
+    const lvl = confidenceLevel(resp.confidence);
+    // Show confidence pill immediately
+    node.querySelector('.ai-cf').innerHTML = `
+      <div class="cf-pill ${lvl.pill}" title="可信度 ${resp.confidence}% — 基於 ${resp.sources} 篇文件比對">
+        <div class="cf-bar"><span class="${lvl.fill}" style="width:0%"></span></div>
+        <span>${resp.confidence}%</span>
+        <span>${lvl.label}</span>
+      </div>`;
+    setTimeout(() => {
+      const fill = node.querySelector('.cf-bar > span');
+      if (fill) fill.style.width = resp.confidence + '%';
+    }, 80);
+    setTimeout(() => {
+      typeOut(node, resp.text, () => {
+        const bubble = node.querySelector('.body').parentElement;
+        const meta = document.createElement('div');
+        meta.className = 'cf-meta';
+        meta.innerHTML = `<span>📎 基於 <b>${resp.sources}</b> 篇文件</span>${
+          resp.expertEndorsed
+            ? '<span style="color:#047857;font-weight:600">✓ 專家認可</span>'
+            : '<span style="color:#94a3b8">尚未經專家驗證</span>'
+        }`;
+        bubble.appendChild(meta);
+        if (resp.confidence < 70) {
+          const esc = document.createElement('div');
+          esc.className = 'cf-escalate';
+          esc.innerHTML = `<span class="cf-escalate-msg">⚠️ AI 信心較低，建議轉介專家</span><button class="cf-escalate-btn">👤 轉接專家（5 位在線）→</button>`;
+          bubble.appendChild(esc);
+        }
+        cChat.scrollTop = cChat.scrollHeight;
+      });
+    }, 500);
+  }
+  cSend.addEventListener('click', () => handleAsk(cInput.value.trim()));
+  cInput.addEventListener('keydown', e => { if (e.key === 'Enter') handleAsk(cInput.value.trim()); });
+  document.querySelectorAll('#copilotSuggestions .suggest-btn').forEach(b => b.addEventListener('click', () => handleAsk(b.getAttribute('data-q'))));
+
+  // ============ KEYBOARD ============
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeCopilot(); closeCompare(); }
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); topSearch.focus(); }
+  });
+
+  // ============ LIVE COUNTER ============
+  const live = document.getElementById('liveCount');
+  setInterval(() => {
+    const n = parseInt(live.textContent.replace(/,/g,''),10);
+    live.textContent = (n + Math.floor(Math.random()*5 - 2)).toLocaleString();
+  }, 3500);
+
+  // ============ STICKY FILTER BAR SHADOW ============
+  const filterBar = document.getElementById('filterBar');
+  const sentinel = document.createElement('div');
+  sentinel.style.height = '1px';
+  filterBar.parentNode.insertBefore(sentinel, filterBar);
+  const io = new IntersectionObserver(([e]) => filterBar.classList.toggle('is-stuck', !e.isIntersecting), { rootMargin: '-133px 0px 0px 0px' });
+  io.observe(sentinel);
+
+  // ============ TOUR ============
+  const tourBack = document.getElementById('tourBack');
+  const tourPop = document.getElementById('tourPop');
+  const tourTitle = document.getElementById('tourTitle');
+  const tourBody = document.getElementById('tourBody');
+  const tourDots = document.getElementById('tourDots');
+  const tourNext = document.getElementById('tourNext');
+  const tourSkip = document.getElementById('tourSkip');
+  const steps = [
+    { target: '#segWrap', title: '🧭 選擇你的引導體驗', body: '小白 vs 直達 —— 同一個社群，兩種使用方式。可隨時切換。' },
+    { target: '#novice-section', title: '✨ AI 問題教練', body: '不知道怎麼問？AI 引導你一步步把問題說清楚。' },
+    { target: '#scenarioChips', title: '📌 依情境篩選', body: '點選情境 chip，下方 Digest 即時篩選。' },
+    { target: '#copilotBubble', title: '🤖 隨時叫出 AI 助理', body: '右下角的 ✨ 是你的常駐助理，融合了專家知識庫。' },
+  ];
+  let tIdx = 0;
+  function renderDots() {
+    tourDots.innerHTML = steps.map((_,i) => `<span style="width:.5rem;height:.5rem;border-radius:9999px;background:${i===tIdx?'#0265b8':'#cbd5e1'};display:inline-block"></span>`).join('');
+  }
+  function showStep(i) {
+    const s = steps[i]; if (!s) { endTour(); return; }
+    const el = document.querySelector(s.target); if (!el) { endTour(); return; }
+    el.scrollIntoView({behavior:'smooth', block:'center'});
+    setTimeout(() => {
+      const r = el.getBoundingClientRect();
+      const popW = 340, popH = 180, gap = 14;
+      let left = r.left + r.width/2 - popW/2;
+      let top = r.bottom + gap;
+      // flip above if overflow
+      if (top + popH > window.innerHeight - 20) top = Math.max(20, r.top - popH - gap);
+      left = Math.max(20, Math.min(left, window.innerWidth - popW - 20));
+      tourPop.style.left = left + 'px';
+      tourPop.style.top = top + 'px';
+      tourTitle.textContent = s.title;
+      tourBody.textContent = s.body;
+      renderDots();
+      tourNext.textContent = (i === steps.length - 1) ? '✓ 開始探索' : '下一步 →';
+      tourPop.classList.add('is-positioned');
+    }, 320);
+  }
+  function startTour() { tourBack.classList.remove('hidden'); tourPop.classList.remove('is-positioned'); tIdx = 0; showStep(0); }
+  function endTour() { tourBack.classList.add('hidden'); tourPop.classList.remove('is-positioned'); try { localStorage.setItem('asus-tour-done','1');} catch(e){} }
+  tourNext.addEventListener('click', () => { tIdx++; if (tIdx >= steps.length) endTour(); else showStep(tIdx); });
+  tourSkip.addEventListener('click', endTour);
+  tourBack.addEventListener('click', e => { if (e.target === tourBack) endTour(); });
+  const params = new URLSearchParams(location.search);
+  const skipTour = params.has('notour');
+  try { if (!skipTour && !localStorage.getItem('asus-tour-done')) setTimeout(startTour, 800); } catch(e) {}
+  if (params.has('direct')) setMode('direct', true);
+  if (params.has('compare')) openCompare('ExpertWiFi 漫遊在會議室之間頻繁斷線，怎麼辦？');
+  if (params.has('copilot')) openCopilot();
+  // Demo helper: ?demo=high|mid|low fires sample Q&A
+  if (params.has('demo')) {
+    openCopilot();
+    const mode = params.get('demo');
+    const q = mode === 'high' ? 'EBR63 紅燈閃爍' : mode === 'mid' ? 'PoE 跳電' : mode === 'low' ? 'IPv6 設定失敗' : null;
+    if (q) setTimeout(() => handleAsk(q), 600);
+  }
+  window.startTour = startTour;
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+# Sensitive / Secrets
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+secrets.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Ad-hoc screenshots (timestamp-prefixed PNGs)
+[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]_*.png
+screenshot*.png
+sc-*.png
+v-*.png
+v2-*.png
+cf-*.png
+zoom-*.png
+mt-*.png
+
+# Logs
+*.log
+
+# Temp
+*.tmp
+~$*
