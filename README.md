@@ -1,4 +1,4 @@
-# ASUS Enterprise Networking · Community Platform Prototype
+# Nexus Enterprise Networking · Community Platform Prototype
 
 > 一個從 **Persona C「直達哥」** 出發、依 **Day 2 Surprise Insights** 反覆迭代的 HTML 原型。
 > 融合 **AI 摘要** 與 **認證專家經驗**，依使用者情境給出最短解題路徑。
@@ -67,7 +67,7 @@
 
 ## 🚀 如何使用
 
-雙擊 `asus-community-prototype.html` 即可在瀏覽器中開啟（需網路連線載入 Tailwind / Google Fonts / Pravatar CDN）。
+雙擊 `nexus-community-prototype.html` 即可在瀏覽器中開啟（需網路連線載入 Tailwind / Google Fonts / Pravatar CDN）。
 
 ### URL 參數（debug 用）
 | 參數 | 效果 |
@@ -84,8 +84,8 @@
 
 ```
 DT/
-├── asus-community-prototype.html      ← V2 最新版（依 Matrix 改版後）
-├── asus-community-prototype-v1.html   ← V1 備份（改版前）
+├── nexus-community-prototype.html      ← V2 最新版（依 Matrix 改版後）
+├── nexus-community-prototype-v1.html   ← V1 備份（改版前）
 ├── screenshots/
 │   ├── 01-hero-mode-coach.png
 │   ├── 02-digest-library.png
